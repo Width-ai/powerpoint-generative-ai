@@ -2,7 +2,7 @@ import backoff
 import openai
 import pinecone
 from langchain.docstore.document import Document
-from typing import List
+from typing import List, Callable
 
 from utils.utils import setup_logger
 
@@ -10,7 +10,7 @@ logger = setup_logger(__name__)
 
 
 @backoff.on_exception(backoff.expo, openai.error.OpenAIError, logger=logger)
-def call_embeddings_with_backoff(input_text: str, model: str = "text-embedding-ada-002"):
+def call_embeddings_with_backoff(input_text: str, model: str = "text-embedding-ada-002") -> List:
     """
     Wrapper function to call open ai and get the embeddings of the input text
     """
@@ -19,7 +19,7 @@ def call_embeddings_with_backoff(input_text: str, model: str = "text-embedding-a
     )["data"][0]["embedding"]
 
 
-def get_embeddings(texts: List[str]) -> List:
+def get_openai_embeddings(texts: List[str]) -> List:
     """
     Calls a wrapper function with backoff enabled to handle errors from openai
     """
@@ -29,7 +29,7 @@ def get_embeddings(texts: List[str]) -> List:
     ]
 
 
-def index_data(index: pinecone.Index, documents: List[Document]):
+def index_data(index: pinecone.Index, documents: List[Document], get_embeddings: Callable[[List], List] = get_openai_embeddings):
     """
     Function to add records to the index
     """
@@ -53,7 +53,8 @@ def search_pinecone_index(
     index: pinecone.Index,
     query: str,
     num_results: int,
-    threshold: float = 0.8
+    threshold: float = 0.8,
+    get_embeddings: Callable[[List], List] = get_openai_embeddings
 ) -> List[str]:
     """
     Function to search pinecone index
