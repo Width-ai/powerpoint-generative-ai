@@ -1,4 +1,5 @@
 # PowerPoint_AI
+This library streamlines the utilization of GPT models for automatic PowerPoint content generation. It further offers a class for loading PowerPoints and performing semantic searches on slide content, enabling you to quickly pinpoint relevant information.
 
 ## Setup
 ```
@@ -14,7 +15,7 @@ from ppt_analyzer import PowerPointAnalyzer
 
 
 # set up two classes
-ppt_gen = PowerPointGenerator(openai_key="...")
+ppt_gen = PowerPointGenerator(openai_key="...", model="gpt-4")
 ppt_analyzer = PowerPointAnalyzer(openai_key="...", pinecone_key="...", pinecone_index="...", pinecone_env="...")
 
 
@@ -51,7 +52,11 @@ This function should follow the following signature:
 def custom_embeddings_function(texts: List[str]) -> List:
     # The function takes in a list of strings to calculate the embeddings for
     # ...
-    # Return a list of lists that represent the embeddings of the input texts 
+    # Return a list of lists that represent the embeddings of the input texts
+
+
+# This can then be used when instantiating an analyzer class like this
+ppt_analyzer = PowerPointAnalyzer(openai_key="...", pinecone_key="...", pinecone_index="...", pinecone_env="...", custom_embeddings_function=custom_embeddings_function)
 ```
 
 
