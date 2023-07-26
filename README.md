@@ -42,6 +42,19 @@ ppt_analyzer.load(file_paths=powerpoint_files)
 relevant_slides = ppt_analyzer.search_for_relevant_slides(query="insurance rates")
 ```
 
+## Custom Embeddings Function
+By default, `PowerPointAnalyzer` utilizes OpenAI's `text-embedding-ada-002` embeddings. However, an optional parameter `custom_embeddings_function` allows the use of a user-defined embeddings solution in place of OpenAI's.
+
+This function should follow the following signature:
+```python
+
+def custom_embeddings_function(texts: List[str]) -> List:
+    # The function takes in a list of strings to calculate the embeddings for
+    # ...
+    # Return a list of lists that represent the embeddings of the input texts 
+```
+
+
 ## Cleaning up index
 ```python
 ppt_analyzer.pinecone_index.delete(delete_all=True)
