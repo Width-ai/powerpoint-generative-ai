@@ -68,13 +68,12 @@ def search_pinecone_index(
 
     try:
         result = index.query(query_em, top_k=num_results, includeMetadata=True)
-        num_matches = len(result['matches'])
 
         # iterate through and only return the results that are within the set threshold
         return [
-            result['matches'][i]['metadata']
-            for i in range(num_matches) 
-            if result['matches'][i]['score'] >= threshold
+            match['metadata']
+            for match in result['matches']
+            if match['score'] >= threshold
         ]
     except Exception as e:
         logger.error(f"Error querying pinecone: {e}")
