@@ -1,4 +1,4 @@
-# PowerPoint_AI
+# PowerPoint-Generative-AI
 This library streamlines the utilization of GPT models for automatic PowerPoint content generation. It further offers a class for loading PowerPoints and performing semantic searches on slide content, enabling you to quickly pinpoint relevant information.
 
 ## Setup
