@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
-  name = 'powerpoint_ai',
-  packages = ['powerpoint_ai'],
+  name = 'powerpoint_generative_ai',
+  packages = ['powerpoint_generative_ai'],
   version = '0.1',
   license='MIT',
   description = 'Streamlines the utilization of GPT models for automatic PowerPoint content generation. Offers semantic searches on slide content, enabling you to quickly pinpoint relevant information',
