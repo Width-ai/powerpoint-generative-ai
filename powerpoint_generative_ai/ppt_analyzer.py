@@ -1,8 +1,8 @@
 import openai
 import pinecone
 from typing import List, Callable
-from ppt.ppt_loader import PPTLoader
-from utils.pinecone_utils import index_data, search_pinecone_index
+from powerpoint_generative_ai.ppt.ppt_loader import PPTLoader
+from powerpoint_generative_ai.utils.pinecone_utils import index_data, search_pinecone_index
 
 class PowerPointAnalyzer:
     """Analyze PPT files."""

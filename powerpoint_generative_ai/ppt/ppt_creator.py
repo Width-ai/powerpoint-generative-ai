@@ -4,7 +4,7 @@ from pptx.slide import Slide
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE
 from pptx.util import Inches
-from utils.utils import setup_logger
+from powerpoint_generative_ai.utils.utils import setup_logger
 
 
 SLIDE_LAYOUTS = {
