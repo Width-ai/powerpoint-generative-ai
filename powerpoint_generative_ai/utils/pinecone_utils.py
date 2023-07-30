@@ -4,7 +4,7 @@ import pinecone
 from langchain.docstore.document import Document
 from typing import List, Callable
 
-from utils.utils import setup_logger
+from powerpoint_generative_ai.utils.utils import setup_logger
 
 logger = setup_logger(__name__)
 
