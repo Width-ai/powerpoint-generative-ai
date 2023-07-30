@@ -10,8 +10,7 @@ pip install -r requirements.txt
 
 ## How to use
 ```python
-from ppt_generator import PowerPointGenerator
-from ppt_analyzer import PowerPointAnalyzer
+from powerpoint_generative_ai import PowerPointGenerator, PowerPointAnalyzer
 
 
 # set up two classes
