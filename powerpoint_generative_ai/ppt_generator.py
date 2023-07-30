@@ -1,16 +1,16 @@
 import json
 import openai
-from powerpoint_generative_ai.domain.constants import MAX_CONTENT_LENGTH
-from powerpoint_generative_ai.domain.exceptions import InvalidModel
-from powerpoint_generative_ai.domain.prompts import (
+from .domain.constants import MAX_CONTENT_LENGTH
+from .domain.exceptions import InvalidModel
+from .domain.prompts import (
     DECK_CREATION_SYSTEM_PROMPT,
     CHART_DATA_IDENTIFICATION,
     BEST_CHART_FOR_DATA_SYSTEM_PROMPT,
     TITLE_GEN_SYSTEM_PROMPT,
     FILENAME_SYSTEM_PROMPT
 )
-from powerpoint_generative_ai.ppt.ppt_creator import PowerPointCreator
-from powerpoint_generative_ai.utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff
+from .ppt.ppt_creator import PowerPointCreator
+from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff
 
 class PowerPointGenerator:
     def __init__(self, openai_key: str, model: str = "gpt-4"):
