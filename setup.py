@@ -8,7 +8,7 @@ setup(
   author = 'Patrick Hennis',
   author_email = 'patrick@width.ai',
   url = 'https://github.com/Width-ai/powerpoint-generative-ai',
-  download_url = 'https://github.com/Width-ai/powerpoint_ai/archive/refs/tags/v0.1.1.tar.gz',
+  download_url = 'https://github.com/Width-ai/powerpoint-generative-ai/archive/refs/tags/v0.1.1.tar.gz',
   keywords = ['LLM', 'Semantic Search', 'PowerPoints'],
   install_requires=[
         'langchain',
