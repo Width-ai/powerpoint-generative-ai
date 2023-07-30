@@ -27,5 +27,3 @@ setup(
     'Programming Language :: Python :: 3.10',
   ],
 )
-
-python3 setup.py sdist && twine upload dist/*
