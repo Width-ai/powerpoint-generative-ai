@@ -11,13 +11,13 @@ install_requires = parse_requirements('requirements.txt')
 setup(
     name='powerpoint_generative_ai',
     packages=find_packages(),
-    version='0.1.4',
+    version='0.1.5',
     license='MIT',
     description='Library written by Width.Ai. Streamlines the utilization of GPT models for automatic PowerPoint content generation. Also offers semantic searches on slide content, enabling you to quickly pinpoint relevant information',
     author='Patrick Hennis',
     author_email='patrick@width.ai',
     url='https://github.com/Width-ai/powerpoint-generative-ai',
-    download_url='https://github.com/Width-ai/powerpoint-generative-ai/archive/refs/tags/v0.1.4.tar.gz',
+    download_url='https://github.com/Width-ai/powerpoint-generative-ai/archive/refs/tags/v0.1.5.tar.gz',
     keywords=['LLM', 'Semantic Search', 'PowerPoints'],
     install_requires=install_requires,
     classifiers=[
