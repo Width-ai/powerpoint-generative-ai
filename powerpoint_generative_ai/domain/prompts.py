@@ -26,7 +26,9 @@ Only return the value of the most applicable chart type:
     "LINE_STACKED_100": {"value": 64, "description": "100% Stacked Line."}
 }
 
-- generate_mermaid_chart(query): in here you can pass mermaid syntax text to generate a diagram (different from a chart). If user wants a graph, give him one using this. The query should include chart type too.
+Again, only return the value of the most applicable chart type. So for line chart you would use 4, etc.
+
+- generate_mermaid_chart(query): in here you can pass mermaid syntax text to generate a diagram (different from a chart). If user wants a diagram, give him one using this.
 
 ====
 
@@ -44,18 +46,23 @@ Think before your actual output, think:
 
 Plan ahead here.
 
+DO NOT USE MORE THAN 25 WORDS TO THINK.
+
 </THINK>
 <out>
 IF you do not want to call a function,  output- call:none:none
 
 IF you want to call a function, output in this format:
 call:func_name:param
-example - call:generate_chart:{"value": 51, "description": "Clustered Column."}
+example - call|generate_chart|51
+
+If you do not want to call a function, output- call|none|none
 
 </out>
 
-YOU CAN ONLY DO ONE THING, either generate an output, or call a function. But always output in this given format. 
-Do not hallucinate. 
+=====
+YOU CAN ONLY DO ONE THING, either generate an output, or call a function. But always output in this given format. The output will be used in our program, so it has to be in this format. Otherwise the code will break.
+Do not hallucinate.
 """
 
 

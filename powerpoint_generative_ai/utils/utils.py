@@ -1,3 +1,4 @@
+import re
 import backoff
 import logging
 import openai
@@ -71,3 +72,19 @@ def call_gpt(messages: List, model: str = "gpt-4", temperature: float = 0.7, max
         top_p=1
     )
     return response['choices'][0]['message']['content']
+
+
+def parse_function_call_output(input_text: str) -> list[str]:
+    """
+    Removes the <THINK> tags from the input_text, clean it and return the function name and params.
+    """
+
+    pattern = "<THINK>.*?</THINK>"
+    cleaned_text = re.sub(pattern, '', input_text, flags=re.DOTALL)
+    text = cleaned_text.replace("<out>", "").replace("</out>", "").strip()
+   
+
+    function_name = text.split("|")[1]
+    param = text.split("|")[2]
+
+    return [function_name, param]
