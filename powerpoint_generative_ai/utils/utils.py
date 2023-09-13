@@ -3,6 +3,8 @@ import backoff
 import logging
 import openai
 from typing import List
+import requests
+import base64, zlib
 
 def setup_logger(name) -> logging.Logger:
     """
@@ -88,3 +90,18 @@ def parse_function_call_output(input_text: str) -> list[str]:
     param = text.split("|")[2]
 
     return [function_name, param]
+
+
+def generate_mermaid_diagram(mermaid_text: str, filename: str = "diagram.png"):
+    """
+    Takes in mermaid syntax text and generates a diagram
+    """
+
+    encoded_mermaid_text = base64.urlsafe_b64encode(zlib.compress(mermaid_text.encode("utf-8"), 9)).decode("ascii")
+    url = f"https://kroki.io/mermaid/png/{encoded_mermaid_text}"
+    response = requests.get(url)
+
+    with open(filename, "wb") as f:
+        f.write(response.content)
+    
+    return filename

@@ -9,7 +9,7 @@ from .domain.prompts import (
     TOOL_USE_PROMPT
 )
 from .ppt.ppt_creator import PowerPointCreator
-from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff, parse_function_call_output
+from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff, generate_mermaid_diagram, parse_function_call_output
 
 class PowerPointGenerator:
     def __init__(self, openai_key: str, model: str = "gpt-4"):
@@ -35,6 +35,10 @@ class PowerPointGenerator:
             if func == "generate_chart":
                 best_chart_response = param
                 user_input += f"\nUse chart type: {best_chart_response}"
+            elif func == "generate_mermaid_diagram":
+                mermaid_text, name = param.split("@,@")
+                generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
+                user_input += f"\We have a diagram named: '{name}.png'. \n Use it in the powerpoint."
 
         # create the deck based on the user input and load its json
         deck_messages = format_simple_message_for_gpt(
