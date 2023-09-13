@@ -55,7 +55,7 @@ example - call:generate_chart:{"value": 51, "description": "Clustered Column."}
 </out>
 
 YOU CAN ONLY DO ONE THING, either generate an output, or call a function. But always output in this given format. 
-Do not hallucinate.
+Do not hallucinate. 
 """
 
 
