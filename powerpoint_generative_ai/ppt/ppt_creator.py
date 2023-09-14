@@ -1,9 +1,13 @@
+from io import BytesIO
 from typing import List
+from PIL import Image
 from pptx import Presentation
 from pptx.slide import Slide
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.util import Inches
+from powerpoint_generative_ai.utils.image_caption_gen import ImageCaptionGenerator
 from powerpoint_generative_ai.utils.utils import setup_logger
 
 
@@ -26,6 +30,7 @@ class PowerPointCreator:
         self.slides_content = slides_content
         self.presentation = Presentation()
         self.logger = setup_logger(__name__)
+        self.image_gen = None
 
 
     def create(self, file_name: str = 'presentation.pptx'):
@@ -78,6 +83,20 @@ class PowerPointCreator:
 
         for series in chart.series:
             series.has_data_labels = True
+
+
+    def generate_alt_text_for_slide(self, slide: Slide, device: str = "cuda"):
+        """Adds alt text for any images on a slide"""
+        if not self.image_gen:
+            self.image_gen = ImageCaptionGenerator(device=device)
+
+        # Find images and create a caption for them
+        for i, shape in enumerate(slide.shapes):
+            if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                image = Image.open(BytesIO(shape.image.blob))
+                # Generate a caption for the image
+                caption = self.image_gen.infer(image)
+                slide.shapes[i]._element._nvXxPr.cNvPr.attrib['descr'] = caption
 
 
     def save(self, file_name: str):
