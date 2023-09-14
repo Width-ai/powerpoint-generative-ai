@@ -30,15 +30,28 @@ class PowerPointGenerator:
             messages=data_messages, temperature=0, max_length=MAX_CONTENT_LENGTH)
         
         
-        func, param = parse_function_call_output(data_response)
-        if func != "none":
-            if func == "generate_chart":
-                best_chart_response = param
-                user_input += f"\nUse chart type: {best_chart_response}"
-            elif func == "generate_mermaid_diagram":
-                mermaid_text, name = param.split("@,@")
-                generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
-                user_input += f"\We have a diagram named: '{name}.png'. \n Use it in the powerpoint."
+        calls = parse_function_call_output(data_response)
+
+        diagrams = []
+        for func, param in calls:
+            if func != "none":
+                if func == "generate_chart":
+                    best_chart_response = param
+                    user_input += f"\nUse chart type: {best_chart_response}"
+                elif func == "generate_mermaid_diagram":
+                    mermaid_text, name = param.split("@,@")
+                    generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
+                    diagrams.append(name)
+        
+        if diagrams != []:
+            diagrams = "\n".join([diagram+'.png' for diagram in diagrams])
+
+            user_input += f"""
+                We have some diagrams named:
+
+                {diagrams}
+
+                You can use them in your powerpoint."""
 
         # create the deck based on the user input and load its json
         deck_messages = format_simple_message_for_gpt(

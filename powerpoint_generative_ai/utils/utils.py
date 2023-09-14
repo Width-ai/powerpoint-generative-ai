@@ -85,11 +85,15 @@ def parse_function_call_output(input_text: str) -> list[str]:
     cleaned_text = re.sub(pattern, '', input_text, flags=re.DOTALL)
     text = cleaned_text.replace("<out>", "").replace("</out>", "").strip()
    
+    functions_calls = text.split("\n")
+    parsed_functions_calls = []
+    for function_call in functions_calls:
+        function_name = function_call.split("|")[1]
+        param = function_call.split("|")[2]
 
-    function_name = text.split("|")[1]
-    param = text.split("|")[2]
+        parsed_functions_calls.append([function_name, param])
 
-    return [function_name, param]
+    return parsed_functions_calls
 
 
 def generate_mermaid_diagram(mermaid_text: str, filename: str = "diagram.png"):

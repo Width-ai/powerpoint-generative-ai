@@ -83,7 +83,7 @@ class PowerPointCreator:
         for series in chart.series:
             series.has_data_labels = True
 
-    def add_image(self, image_path: str, slide: Slide, x: Inches = Inches(4.75), y: Inches = Inches(2), cx: Inches=Inches(5.5), cy: Inches = Inches(4.5)):
+    def add_image(self, image_path: str, slide: Slide, x: Inches = Inches(4.75), y: Inches = Inches(2), cx: Inches=Inches(4), cy: Inches = Inches(3.5)):
         """Adds an image to the current slide"""
         slide.shapes.add_picture(image_path, x, y, cx, cy)
 
