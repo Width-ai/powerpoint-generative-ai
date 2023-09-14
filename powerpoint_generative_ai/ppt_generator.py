@@ -4,13 +4,12 @@ from .domain.constants import MAX_CONTENT_LENGTH
 from .domain.exceptions import InvalidModel
 from .domain.prompts import (
     DECK_CREATION_SYSTEM_PROMPT,
-    CHART_DATA_IDENTIFICATION,
-    BEST_CHART_FOR_DATA_SYSTEM_PROMPT,
     TITLE_GEN_SYSTEM_PROMPT,
-    FILENAME_SYSTEM_PROMPT
+    FILENAME_SYSTEM_PROMPT,
+    TOOL_USE_PROMPT
 )
 from .ppt.ppt_creator import PowerPointCreator
-from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff
+from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff, generate_mermaid_diagram, parse_function_call_output
 
 class PowerPointGenerator:
     def __init__(self, openai_key: str, model: str = "gpt-4"):
@@ -24,20 +23,35 @@ class PowerPointGenerator:
 
     def create_powerpoint(self, user_input: str) -> str:
         """Generates a powerpoint based on the user's input"""
-        # identify if the user passed in data for a chart
         data_messages = format_simple_message_for_gpt(
-            system_message=CHART_DATA_IDENTIFICATION, user_message=user_input)
+            system_message=TOOL_USE_PROMPT, 
+            user_message=f"This is the user input: \n{user_input}\n Analyze this and output in the given format.")
         data_response = call_gpt_with_backoff(
             messages=data_messages, temperature=0, max_length=MAX_CONTENT_LENGTH)
+        
+        
+        calls = parse_function_call_output(data_response)
 
-        # data was found in the input, determine which chart type fits the data best
-        if data_response.lower() == "data found":
-            best_chart_messages = format_simple_message_for_gpt(
-                system_message=BEST_CHART_FOR_DATA_SYSTEM_PROMPT, user_message=user_input)
-            best_chart_response = call_gpt_with_backoff(
-                messages=best_chart_messages, temperature=0)
-            # append this chart type instruction to the user input for deck creation
-            user_input += f"\nUse chart type: {best_chart_response}"
+        diagrams = []
+        for func, param in calls:
+            if func != "none":
+                if func == "generate_chart":
+                    best_chart_response = param
+                    user_input += f"\nUse chart type: {best_chart_response}"
+                elif func == "generate_mermaid_diagram":
+                    mermaid_text, name = param.split("@,@")
+                    generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
+                    diagrams.append(name)
+        
+        if diagrams != []:
+            diagrams = "\n".join([diagram+'.png' for diagram in diagrams])
+
+            user_input += f"""
+                We have some diagrams named:
+
+                {diagrams}
+
+                You can use them in your powerpoint."""
 
         # create the deck based on the user input and load its json
         deck_messages = format_simple_message_for_gpt(

@@ -46,8 +46,9 @@ class PowerPointCreator:
         """Helper function to add slides to powerpoint"""
         text_content = content.get('content', None)
         chart_data = content.get('chart_data', None)
+        image_path = content.get('diagram_name', None)
         LAYOUT = SLIDE_LAYOUTS['Title Slide']
-        if chart_data and text_content:
+        if text_content and (chart_data or image_path):
             LAYOUT = SLIDE_LAYOUTS['Two Content'] # Text column and blank right side
         elif chart_data and not text_content:
             LAYOUT = SLIDE_LAYOUTS['Title Only'] # Just a title for a big chart
@@ -66,6 +67,9 @@ class PowerPointCreator:
         if chart_data:
             self.add_chart(data=chart_data, slide=slide, chart_type=content.get('chart_type', XL_CHART_TYPE.COLUMN_CLUSTERED))
 
+        if image_path:
+            self.add_image(image_path=image_path, slide=slide)
+
 
     def add_chart(self, data: dict, slide: Slide, x: Inches = Inches(4.75), y: Inches = Inches(2), cx: Inches=Inches(5.5), cy: Inches = Inches(4.5), chart_type: int = XL_CHART_TYPE.COLUMN_CLUSTERED):
         """Creates a chart and adds it to the current slide"""
@@ -79,6 +83,9 @@ class PowerPointCreator:
         for series in chart.series:
             series.has_data_labels = True
 
+    def add_image(self, image_path: str, slide: Slide, x: Inches = Inches(4.75), y: Inches = Inches(2), cx: Inches=Inches(4), cy: Inches = Inches(3.5)):
+        """Adds an image to the current slide"""
+        slide.shapes.add_picture(image_path, x, y, cx, cy)
 
     def save(self, file_name: str):
         self.presentation.save(file_name)
