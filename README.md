@@ -58,6 +58,17 @@ def custom_embeddings_function(texts: List[str]) -> List:
 ppt_analyzer = PowerPointAnalyzer(openai_key="...", pinecone_key="...", pinecone_index="...", pinecone_env="...", custom_embeddings_function=custom_embeddings_function)
 ```
 
+## Generating Alt-Text for Images
+The `PowerPointGenerator` has a function `create_alt_text_for_powerpoint`. It takes two parameters; `ppt_path` (the path to the powerpoint) and `device`. The `device` param has a few options, namely (`cuda`, `mps`, `cpu`). The function generates alt-text for images, sets them as the `descr` attribute (alt text), then saves them back to the path it read it from. Here is an example snippet using the function:
+
+```python
+from powerpoint_generative_ai.ppt_generator import PowerPointGenerator
+ppt_gen = PowerPointGenerator(openai_key="...", model="gpt-4")
+ppt_gen.create_alt_text_for_powerpoint(ppt_path="/path/to/slide_deck.pptx", device="mps")
+```
+
+The generated captions will also be logged for the user to see what has been generated.
+
 
 ## Cleaning up index
 ```python

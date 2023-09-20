@@ -1,5 +1,11 @@
 import json
 import openai
+from io import BytesIO
+from PIL import Image
+from pptx import Presentation
+from pptx.shapes.base import BaseShape
+from pptx.enum.shapes import MSO_SHAPE_TYPE
+from typing import List
 from .domain.constants import MAX_CONTENT_LENGTH
 from .domain.exceptions import InvalidModel
 from .domain.prompts import (
@@ -10,7 +16,9 @@ from .domain.prompts import (
     FILENAME_SYSTEM_PROMPT
 )
 from .ppt.ppt_creator import PowerPointCreator
-from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff
+from .utils.image_caption_gen import ImageCaptionGenerator, find_image_shape, get_image_shape_from_path
+from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff, setup_logger
+
 
 class PowerPointGenerator:
     def __init__(self, openai_key: str, model: str = "gpt-4"):
@@ -21,6 +29,9 @@ class PowerPointGenerator:
                 "name is correct or you have access to the model requested"
             )
         self.model = model
+        self.image_gen = None
+        self.logger = setup_logger(__name__)
+
 
     def create_powerpoint(self, user_input: str) -> str:
         """Generates a powerpoint based on the user's input"""
@@ -63,3 +74,55 @@ class PowerPointGenerator:
         ppt = PowerPointCreator(title=title_response, slides_content=deck_json)
         ppt.create(file_name=filename_response)
         return filename_response
+
+    
+    def _generate_caption(self, shape: BaseShape) -> str:
+        """Generates caption for image"""
+        try:
+            image = Image.open(BytesIO(shape.image.blob))
+            return self.image_gen.infer(image)
+        except Exception as e:
+            self.logger.error(f"Error generating caption for image: {e}")
+            self.logger.exception(e)
+            return ""
+
+
+    def create_alt_text_for_powerpoint(self, ppt_path: str, device: str = "cuda"):
+        """
+        Generates alt text for a powerpoint, writes back to the original path
+        Params:
+        ::ppt_path: path to the powerpoint
+        ::device: device to run on, options include ["cuda", "cpu", "mps"]
+        """
+        # load in ppt
+        ppt = Presentation(ppt_path)
+
+        # check if we need to instantiate a new caption gen
+        if not self.image_gen:
+            self.image_gen = ImageCaptionGenerator(device=device)
+
+        # Find images and create a caption for them
+        generate_captions = []
+        for slide_index, slide in enumerate(ppt.slides):
+            for shape_index, shape in enumerate(slide.shapes):
+                if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                    caption = self._generate_caption(shape)
+                    generate_captions.append({"slide": slide_index, "shape": shape_index, "caption": caption})
+                    slide.shapes[shape_index]._element._nvXxPr.cNvPr.attrib['descr'] = caption
+                elif shape.shape_type == MSO_SHAPE_TYPE.PLACEHOLDER:
+                    if hasattr(shape, "image"):
+                        caption = self._generate_caption(shape)
+                        generate_captions.append({"slide": slide_index, "shape": shape_index, "caption": caption})
+                        slide.shapes[shape_index]._element._nvXxPr.cNvPr.attrib['descr'] = caption
+                elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+                    # if the shape is a group, check if there is a nested image
+                    image_path = find_image_shape(shape=shape)
+                    if image_path:
+                        image_shape = get_image_shape_from_path(shape=shape, path=image_path)
+                        caption = self._generate_caption(image_shape)
+                        generate_captions.append({"slide": slide_index, "shape_path": image_path, "caption": caption})
+                        image_shape._element._nvXxPr.cNvPr.attrib['descr'] = caption
+        self.logger.info(f"Generated alt text: {generate_captions}")
+        # save ppt
+        ppt.save(ppt_path)
+        self.logger.info("Updated Presentation alt-text")
