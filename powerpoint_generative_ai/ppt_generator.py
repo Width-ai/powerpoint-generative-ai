@@ -7,7 +7,8 @@ from .domain.prompts import (
     DECK_CREATION_SYSTEM_PROMPT,
     TITLE_GEN_SYSTEM_PROMPT,
     FILENAME_SYSTEM_PROMPT,
-    TOOL_USE_PROMPT
+    TOOL_USE_PROMPT,
+    SLIDE_CREATION_PROMPT
 )
 from .ppt.ppt_creator import PowerPointCreator
 from .utils.utils import format_simple_message_for_gpt, call_gpt_with_backoff, generate_mermaid_diagram, parse_function_call_output
@@ -80,5 +81,68 @@ class PowerPointGenerator:
         return filename_response
 
 
-    def _create_powerpoint_from_outline(outline: list) -> str:
-        pass
+    def create_powerpoint_from_outline(self, outline: list) -> str:
+        
+        deck = []
+        for slide in outline:
+            user_input = slide
+            data_messages = format_simple_message_for_gpt(
+                system_message=TOOL_USE_PROMPT, 
+                user_message=f"This is the user input: \n{user_input}\n Analyze this and output in the given format.")
+            data_response = call_gpt_with_backoff(
+                messages=data_messages, temperature=0, max_length=MAX_CONTENT_LENGTH)
+        
+            print(data_response)
+            calls = parse_function_call_output(data_response)
+            print('\n\n',calls)
+            # TODO(sirri69): THIS CAN BE ABSTRACTED IN A `update_prompt` function
+            diagrams = []
+            for func, param in calls:
+                if func != "none":
+                    if func == "generate_chart":
+                        best_chart_response = param
+                        user_input += f"\nUse chart type: {best_chart_response}"
+                    elif func == "generate_mermaid_diagram":
+                        mermaid_text, name = param.split("@,@")
+                        generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
+                        diagrams.append(name)
+            
+            if diagrams != []:
+                diagrams = "\n".join([diagram+'.png' for diagram in diagrams])
+
+                user_input += f"""
+                    We have some diagrams named:
+
+                    {diagrams}
+
+                    You can use them in your powerpoint."""
+                
+
+            # create the slide and append it to the deck
+            slide_messages = format_simple_message_for_gpt(
+                system_message=SLIDE_CREATION_PROMPT, user_message=user_input)
+            slide_response = call_gpt_with_backoff(
+                messages=slide_messages, temperature=0.2, max_length=MAX_CONTENT_LENGTH)
+            slide_json = json.loads(slide_response)
+            deck.append(slide_json)
+
+        title_messages = format_simple_message_for_gpt(
+            system_message=TITLE_GEN_SYSTEM_PROMPT, user_message=deck)
+        title_response = call_gpt_with_backoff(messages=title_messages)
+        title = title_response.replace('"', '')
+
+        filename_message = format_simple_message_for_gpt(
+            system_message=FILENAME_SYSTEM_PROMPT, user_message=title_response)
+        filename_response = call_gpt_with_backoff(
+            messages=filename_message, temperature=0)
+        filename_response = filename_response.replace('"', '')
+
+        ppt = PowerPointCreator(title=title, slides_content=deck)
+        ppt.create(file_name=filename_response)
+        
+        return filename_response
+                
+
+            
+
+

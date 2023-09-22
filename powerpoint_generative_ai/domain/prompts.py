@@ -40,7 +40,6 @@ You can make sophisticated diagrams and simple ones too. Try to explain the topi
 Yes, use @,@ to separate the mermaid syntax text and the name of the diagram.
 
 
-
 ====
 
 All your outputs have to be in this format:
@@ -63,15 +62,15 @@ DO NOT USE MORE THAN 5-7 sentences TO THINK.
 IF you do not want to call a function,  output- call:none:none
 
 IF you want to call a function, output in this format:
-call|func_name|param
-example - call|generate_chart|51
-example - call|generate_mermaid_diagram|graph TD; A-->B; A-->C; B-->D; C-->D;@,@Diagram name
+call<|?|>func_name<|?|>param
+example - call<|?|>generate_chart<|?|>51
+example - call<|?|>generate_mermaid_diagram<|?|>graph TD; A-->B; A-->C; B-->D; C-->D;@,@Diagram name
 
 Remember that these are just examples. Make your own diagrams and charts. Do not be limited to these.
 
 Understand that you can call multiple functions at the same time. Every function call must be in a seperate line.
 
-If you do not want to call a function, output- call|none|none
+If you do not want to call a function, output- call<|?|>none<|?|>none
 
 </out>
 
@@ -153,8 +152,7 @@ TITLE_GEN_SYSTEM_PROMPT = """Generate a title for this powerpoint based on the c
 FILENAME_SYSTEM_PROMPT = """Take the powerpoint title in the user text and create a short version to be used as a filename for a .pptx file"""
 
 
-def SLIDE_CREATION_PROMPT(description):
-    PROMPT = f"""
+SLIDE_CREATION_PROMPT = """
 Take the user input and create content for a slide in a slide show. You are given description of a single slide. You will generate a title for the slide, content that tells a cohesive story throughout the slide. DO NOT title the slide like 'Slide X: ...'.
 Make sure the content you write is informative and extensive. But it doesn't need to be too long. Short sentences with good information is the key.
 

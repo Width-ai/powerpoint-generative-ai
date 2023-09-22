@@ -88,8 +88,8 @@ def parse_function_call_output(input_text: str) -> list[str]:
     functions_calls = text.split("\n")
     parsed_functions_calls = []
     for function_call in functions_calls:
-        function_name = function_call.split("|")[1]
-        param = function_call.split("|")[2]
+        function_name = function_call.split("<|?|>")[1]
+        param = function_call.split("<|?|>")[2]
 
         parsed_functions_calls.append([function_name, param])
 
