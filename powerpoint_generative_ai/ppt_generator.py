@@ -87,14 +87,13 @@ class PowerPointGenerator:
         for slide in outline:
             user_input = slide
             data_messages = format_simple_message_for_gpt(
-                system_message=TOOL_USE_PROMPT, 
+                system_message=TOOL_USE_PROMPT + "\n\n Not that there is no need to generate a diagram unless user asks you to generate one.", 
                 user_message=f"This is the user input: \n{user_input}\n Analyze this and output in the given format.")
             data_response = call_gpt_with_backoff(
                 messages=data_messages, temperature=0, max_length=MAX_CONTENT_LENGTH)
         
-            print(data_response)
             calls = parse_function_call_output(data_response)
-            print('\n\n',calls)
+
             # TODO(sirri69): THIS CAN BE ABSTRACTED IN A `update_prompt` function
             diagrams = []
             for func, param in calls:
@@ -117,17 +116,19 @@ class PowerPointGenerator:
 
                     You can use them in your powerpoint."""
                 
-
             # create the slide and append it to the deck
             slide_messages = format_simple_message_for_gpt(
                 system_message=SLIDE_CREATION_PROMPT, user_message=user_input)
             slide_response = call_gpt_with_backoff(
                 messages=slide_messages, temperature=0.2, max_length=MAX_CONTENT_LENGTH)
+            
             slide_json = json.loads(slide_response)
             deck.append(slide_json)
 
+
+        # TODO(sirri69) : Both title and filename can be generated in one call
         title_messages = format_simple_message_for_gpt(
-            system_message=TITLE_GEN_SYSTEM_PROMPT, user_message=deck)
+            system_message=TITLE_GEN_SYSTEM_PROMPT, user_message=str(outline))
         title_response = call_gpt_with_backoff(messages=title_messages)
         title = title_response.replace('"', '')
 

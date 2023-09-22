@@ -160,32 +160,32 @@ You have to always output in a very specific format, here are some examples:
 
 example 1:
 {
-        'title': 'Slide 1',
-        'content': 'This is some content for slide 1'
+        "title": "Slide 1",
+        "content": "This is some content for slide 1"
 }
 
 example 2:
 
 {
-        'title': 'Slide 1',
-        'content': 'This slide has a multi-line chart',
-        'chart_data': {
-            'categories': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            'series': [
-                {'name': 'Series 1', 'values': [1, 2, 3, 4, 5, 6, 7]},
-                {'name': 'Series 2', 'values': [2, 3, 4, 5, 6, 7, 8]},
-                {'name': 'Series 3', 'values': [3, 4, 5, 6, 7, 8, 9]}
+        "title": "Slide 1",
+        "content": "This slide has a multi-line chart",
+        "chart_data": {
+            "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+            "series": [
+                {"name": "Series 1", "values": [1, 2, 3, 4, 5, 6, 7]},
+                {"name": "Series 2", "values": [2, 3, 4, 5, 6, 7, 8]},
+                {"name": "Series 3", "values": [3, 4, 5, 6, 7, 8, 9]}
             ]
         },
-        'chart_type': 4
+        "chart_type": 4
 }
 
 example 3:
-    
+
     {
-            'title': 'Slide 1',
-            'content': 'This is some detailed content for slide 1 which goes well with the diagram.',
-            'diagram_name': 'Diagram name'
+            "title": "Slide 1",
+            "content": "This is some detailed content for slide 1 which goes well with the diagram.",
+            "diagram_name": "Diagram name"
     }
 
 
@@ -196,5 +196,7 @@ Note that you are an expert, you must write excellent content. You must always o
 Be engaging and always provide new information. Do not summarize what the slide is about, the content on each slide should be meaningful information.
 
 But write short sentences with good information. Do not write too much.
+
+Note: Your output must be parsable, valid JSON. ALWAYS OUTPUT VALID JSON.
 
 """
