@@ -5,6 +5,7 @@ import openai
 from typing import List
 import requests
 import base64, zlib
+from PIL import Image
 
 def setup_logger(name) -> logging.Logger:
     """
@@ -107,5 +108,11 @@ def generate_mermaid_diagram(mermaid_text: str, filename: str = "diagram.png"):
 
     with open(filename, "wb") as f:
         f.write(response.content)
+
+    try:    
+        img = Image.open(filename)
+    except Exception as e:
+        print(e)
+        return None
     
     return filename
