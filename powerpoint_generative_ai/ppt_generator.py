@@ -1,4 +1,5 @@
 import json
+from typing import Union
 import openai
 from .domain.constants import MAX_CONTENT_LENGTH
 from .domain.exceptions import InvalidModel
@@ -20,8 +21,8 @@ class PowerPointGenerator:
                 "name is correct or you have access to the model requested"
             )
         self.model = model
-
-    def create_powerpoint(self, user_input: str) -> str:
+    # str or list user_input
+    def create_powerpoint(self, user_input: Union[str, list]) -> str:
         """Generates a powerpoint based on the user's input"""
         data_messages = format_simple_message_for_gpt(
             system_message=TOOL_USE_PROMPT, 
@@ -77,3 +78,7 @@ class PowerPointGenerator:
         ppt = PowerPointCreator(title=title_response, slides_content=deck_json)
         ppt.create(file_name=filename_response)
         return filename_response
+
+
+    def _create_powerpoint_from_outline(outline: list) -> str:
+        pass

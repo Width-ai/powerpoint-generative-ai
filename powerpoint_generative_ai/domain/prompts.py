@@ -50,7 +50,8 @@ Think before your actual output, think:
 - What is the user asking?
 - Should we use a tool here?
 - How should we use the tool here?
-- Dowe need a chart or a diagram?
+- Do we need a chart or a diagram?
+---- How can we generate a creative diagram? Make sure to not just copy paste the format of the example.
 - Analyze the data.
 
 Plan ahead here.
@@ -150,3 +151,52 @@ BEST_CHART_FOR_DATA_SYSTEM_PROMPT = """Is the user asking to use a specific type
 TITLE_GEN_SYSTEM_PROMPT = """Generate a title for this powerpoint based on the content"""
 
 FILENAME_SYSTEM_PROMPT = """Take the powerpoint title in the user text and create a short version to be used as a filename for a .pptx file"""
+
+
+def SLIDE_CREATION_PROMPT(description):
+    PROMPT = f"""
+Take the user input and create content for a slide in a slide show. You are given description of a single slide. You will generate a title for the slide, content that tells a cohesive story throughout the slide. DO NOT title the slide like 'Slide X: ...'.
+Make sure the content you write is informative and extensive. But it doesn't need to be too long. Short sentences with good information is the key.
+
+You have to always output in a very specific format, here are some examples:
+
+example 1:
+{
+        'title': 'Slide 1',
+        'content': 'This is some content for slide 1'
+}
+
+example 2:
+
+{
+        'title': 'Slide 1',
+        'content': 'This slide has a multi-line chart',
+        'chart_data': {
+            'categories': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            'series': [
+                {'name': 'Series 1', 'values': [1, 2, 3, 4, 5, 6, 7]},
+                {'name': 'Series 2', 'values': [2, 3, 4, 5, 6, 7, 8]},
+                {'name': 'Series 3', 'values': [3, 4, 5, 6, 7, 8, 9]}
+            ]
+        },
+        'chart_type': 4
+}
+
+example 3:
+    
+    {
+            'title': 'Slide 1',
+            'content': 'This is some detailed content for slide 1 which goes well with the diagram.',
+            'diagram_name': 'Diagram name'
+    }
+
+
+
+You will be provided diagram_name and chart_data when necessary.
+
+Note that you are an expert, you must write excellent content. You must always output in the given format. Even if other outputs are different.
+Be engaging and always provide new information. Do not summarize what the slide is about, the content on each slide should be meaningful information.
+
+But write short sentences with good information. Do not write too much.
+
+"""
