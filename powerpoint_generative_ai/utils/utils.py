@@ -103,13 +103,15 @@ def generate_mermaid_diagram(mermaid_text: str, filename: str = "diagram.png"):
     """
 
     encoded_mermaid_text = base64.urlsafe_b64encode(zlib.compress(mermaid_text.encode("utf-8"), 9)).decode("ascii")
-    url = f"https://kroki.io/mermaid/png/{encoded_mermaid_text}"
-    response = requests.get(url)
+    
+    try:
+        url = f"https://kroki.io/mermaid/png/{encoded_mermaid_text}"
+        response = requests.get(url)
 
-    with open(filename, "wb") as f:
-        f.write(response.content)
+    
+        with open(filename, "wb") as f:
+            f.write(response.content)
 
-    try:    
         img = Image.open(filename)
     except Exception as e:
         print(e)

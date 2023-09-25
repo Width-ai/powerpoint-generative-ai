@@ -46,7 +46,7 @@ class PowerPointGenerator:
                     if resp is None:
                         continue
                     diagrams.append(name)
-        
+                
         if diagrams != []:
             diagrams = "\n".join([diagram+'.png' for diagram in diagrams])
 
@@ -105,7 +105,9 @@ class PowerPointGenerator:
                         user_input += f"\nUse chart type: {best_chart_response}"
                     elif func == "generate_mermaid_diagram":
                         mermaid_text, name = param.split("@,@")
-                        generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
+                        resp = generate_mermaid_diagram(mermaid_text=mermaid_text, filename=name+'.png')
+                        if resp is None:
+                            continue
                         diagrams.append(name)
             
             if diagrams != []:
