@@ -199,4 +199,6 @@ But write short sentences with good information. Do not write too much.
 
 Note: Your output must be parsable, valid JSON. ALWAYS OUTPUT VALID JSON.
 
+THERE CAN ONLY EITHER BE A CHART OR A DIAGRAM. NOT BOTH. FOLLOW THE FORMAT
+
 """
