@@ -79,6 +79,7 @@ class PowerPointCreator:
             chart_data.add_series(series['name'], series['values'])
 
         chart = slide.shapes.add_chart(chart_type, x, y, cx, cy, chart_data).chart
+        chart.has_legend = True
 
         for series in chart.series:
             series.has_data_labels = True
@@ -91,3 +92,26 @@ class PowerPointCreator:
         self.presentation.save(file_name)
         self.logger.info(f"Presentation successfully created: {file_name}")
 
+
+
+    def _csv_to_table(table_placeholder, csv_text):
+        # ---split the csv text into rows and columns by commas and newlines---
+        rows = csv_text.split('\n')
+        data = [row.split(',') for row in rows]
+
+        # ---get the number of rows and columns from the data---
+        row_count = len(data)
+        col_count = len(data[0])
+
+        # ---insert a table into the placeholder with the same size as the data---
+        table_shape = table_placeholder.insert_table(row_count, col_count)
+        table = table_shape.table
+
+        # ---iterate over the data and assign each value to the corresponding cell---
+        for r in range(row_count):
+            for c in range(col_count):
+                cell = table.cell(r, c)
+                cell.text = data[r][c]
+
+        # ---return the table shape object---
+        return table_shape

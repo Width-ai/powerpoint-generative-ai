@@ -184,7 +184,7 @@ example 3:
 
     {
             "title": "Slide 1",
-            "content": "This is some detailed content for slide 1 which goes well with the diagram.",
+            "content": "This is some detailed content for slide 1. Informative.",
             "diagram_name": "Diagram name"
     }
 
@@ -196,6 +196,9 @@ Note that you are an expert, you must write excellent content. You must always o
 Be engaging and always provide new information. Do not summarize what the slide is about, the content on each slide should be meaningful information.
 
 But write short sentences with good information. Do not write too much.
+
+DO NOT SAY THINGS LIKE "This slide has"  or "This slide contains", just write the content.
+Be informative, no need to mention what the slide contains, just write directly.
 
 Note: Your output must be parsable, valid JSON. ALWAYS OUTPUT VALID JSON.
 
