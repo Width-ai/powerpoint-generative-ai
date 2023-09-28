@@ -3,7 +3,7 @@ from pptx import Presentation
 from pptx.slide import Slide
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE
-from pptx.util import Inches
+from pptx.util import Inches, Pt
 from powerpoint_generative_ai.utils.utils import setup_logger
 
 
@@ -47,18 +47,29 @@ class PowerPointCreator:
         text_content = content.get('content', None)
         chart_data = content.get('chart_data', None)
         image_path = content.get('diagram_name', None)
+        table_data = content.get('table_data', None)
+
         LAYOUT = SLIDE_LAYOUTS['Title Slide']
-        if text_content and (chart_data or image_path):
+        if table_data:
+            LAYOUT = SLIDE_LAYOUTS['Title Only']
+        elif text_content and (chart_data or image_path):
             LAYOUT = SLIDE_LAYOUTS['Two Content'] # Text column and blank right side
         elif chart_data and not text_content:
             LAYOUT = SLIDE_LAYOUTS['Title Only'] # Just a title for a big chart
-        elif text_content and not chart_data:
+        elif (text_content and not chart_data):
             LAYOUT = SLIDE_LAYOUTS['Title and Content'] # Standard slide format
 
         slide_layout = self.presentation.slide_layouts[LAYOUT]
         slide = self.presentation.slides.add_slide(slide_layout)
         title = slide.shapes.title
         title.text = content.get('title', None)
+
+        
+        if table_data:
+            title.text = text_content
+            title.text_frame.paragraphs[0].font.size = Pt(13)
+            self.add_table(slide=slide, csv_text=table_data)
+            return
 
         if text_content:
             content_shape = slide.shapes.placeholders[1]
@@ -69,6 +80,7 @@ class PowerPointCreator:
 
         if image_path:
             self.add_image(image_path=image_path, slide=slide)
+
 
 
     def add_chart(self, data: dict, slide: Slide, x: Inches = Inches(4.75), y: Inches = Inches(2), cx: Inches=Inches(5.5), cy: Inches = Inches(4.5), chart_type: int = XL_CHART_TYPE.COLUMN_CLUSTERED):
@@ -88,30 +100,31 @@ class PowerPointCreator:
         """Adds an image to the current slide"""
         slide.shapes.add_picture(image_path, x, y, cx, cy)
 
+    def add_table(self, slide: Slide, csv_text: str):
+        """Adds a table to the current slide"""
+
+        shapes = slide.shapes
+        self._csv_to_table(shapes, csv_text)
+
     def save(self, file_name: str):
         self.presentation.save(file_name)
         self.logger.info(f"Presentation successfully created: {file_name}")
 
-
-
-    def _csv_to_table(table_placeholder, csv_text):
-        # ---split the csv text into rows and columns by commas and newlines---
+    def _csv_to_table(self, shapes, csv_text):
         rows = csv_text.split('\n')
         data = [row.split(',') for row in rows]
 
-        # ---get the number of rows and columns from the data---
         row_count = len(data)
         col_count = len(data[0])
 
-        # ---insert a table into the placeholder with the same size as the data---
-        table_shape = table_placeholder.insert_table(row_count, col_count)
-        table = table_shape.table
+        left = top = Inches(2.0)
+        width = Inches(6.0)
+        height = Inches(0.8)
 
-        # ---iterate over the data and assign each value to the corresponding cell---
+
+        table = shapes.add_table(row_count, col_count, left, top, width, height).table
+
         for r in range(row_count):
             for c in range(col_count):
                 cell = table.cell(r, c)
                 cell.text = data[r][c]
-
-        # ---return the table shape object---
-        return table_shape

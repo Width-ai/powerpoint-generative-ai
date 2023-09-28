@@ -205,7 +205,7 @@ All will be %’s except for age
 
 Only show Drug / Placebo - Drug on left
 
-CSV Data:
+CSV Data, generate a table:
 Category,ORR a,n (%)
 KCP-330-012 mITT (N = 122),31 (25.4),18.0, 34.1
 CBR b,n (%)
@@ -223,6 +223,10 @@ SD,n (%)
 48 (39.3),30.6, 48.6
 PD/NE,n (%)
 26 (21.3),14.4, 29.6
+
+=========
+
+Generate a table using the data above. Do not generate a graph.
 """,
     """
     Title: resistance to multiple oral antibiotics further complicates treatment of cUTI in out-patient setting
@@ -403,7 +407,7 @@ def generate_ppt():
     
 def generate_ppt_from_outline():
     ppt_generator = PowerPointGenerator(OPENAI_API_KEY)
-    powerpoint_files = ppt_generator.create_powerpoint_from_outline(outline=OUTLINE3)
+    powerpoint_files = ppt_generator.create_powerpoint_from_outline(outline=[OUTLINE3[0]])
     print(powerpoint_files)
 
 if __name__ == "__main__":
