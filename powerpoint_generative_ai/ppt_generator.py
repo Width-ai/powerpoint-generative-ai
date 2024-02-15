@@ -39,14 +39,14 @@ class PowerPointGenerator:
         data_messages = format_simple_message_for_gpt(
             system_message=CHART_DATA_IDENTIFICATION, user_message=user_input)
         data_response = call_gpt_with_backoff(
-            messages=data_messages, temperature=0, max_length=MAX_CONTENT_LENGTH)
+            messages=data_messages, model=self.model, temperature=0, max_length=MAX_CONTENT_LENGTH)
 
         # data was found in the input, determine which chart type fits the data best
         if data_response.lower() == "data found":
             best_chart_messages = format_simple_message_for_gpt(
                 system_message=BEST_CHART_FOR_DATA_SYSTEM_PROMPT, user_message=user_input)
             best_chart_response = call_gpt_with_backoff(
-                messages=best_chart_messages, temperature=0)
+                messages=best_chart_messages, model=self.model, temperature=0)
             # append this chart type instruction to the user input for deck creation
             user_input += f"\nUse chart type: {best_chart_response}"
 
@@ -54,20 +54,20 @@ class PowerPointGenerator:
         deck_messages = format_simple_message_for_gpt(
             system_message=DECK_CREATION_SYSTEM_PROMPT, user_message=user_input)
         deck_response = call_gpt_with_backoff(
-            messages=deck_messages, temperature=0.2, max_length=MAX_CONTENT_LENGTH)
+            messages=deck_messages, model=self.model, temperature=0.2, max_length=MAX_CONTENT_LENGTH)
         deck_json = json.loads(deck_response)
 
         # create a fitting title for the deck
         title_messages = format_simple_message_for_gpt(
             system_message=TITLE_GEN_SYSTEM_PROMPT, user_message=deck_response)
-        title_response = call_gpt_with_backoff(messages=title_messages)
+        title_response = call_gpt_with_backoff(messages=title_messages, model=self.model)
         title_response = title_response.replace('"', '')
 
         # create a filename to save the deck as
         filename_message = format_simple_message_for_gpt(
             system_message=FILENAME_SYSTEM_PROMPT, user_message=title_response)
         filename_response = call_gpt_with_backoff(
-            messages=filename_message, temperature=0)
+            messages=filename_message, model=self.model, temperature=0)
         filename_response = filename_response.replace('"', '')
 
         # create the generated deck and save it to the specified filename
