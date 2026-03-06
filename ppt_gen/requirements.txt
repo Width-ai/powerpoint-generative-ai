@@ -1,0 +1,7 @@
+groq
+python-pptx
+python-docx
+lxml
+flask
+anthropic
+

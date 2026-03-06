@@ -1,0 +1,9 @@
+# Flask UI
+flask
+anthropic
+
+# PPT generation
+groq
+python-pptx
+python-docx
+lxml
